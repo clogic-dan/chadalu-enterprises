@@ -1,17 +1,17 @@
+import Navbar from '@/components/Navbar'
+import Hero from '@/components/Hero'
+import Features from '@/components/Features'
+import EquipmentGrid from '@/components/EquipmentGrid'
+import Footer from '@/components/Footer'
+
 export default function Home() {
   return (
-    <main className="min-h-screen">
-      <div className="text-center py-20">
-        <h1 className="text-4xl md:text-6xl font-display text-primary-gold mb-4">
-          CHADALU Enterprises
-        </h1>
-        <p className="text-xl text-primary-cream/80">
-          Building Equipment Hire Platform
-        </p>
-        <p className="mt-4 text-primary-cream/60">
-          Coming Soon...
-        </p>
-      </div>
+    <main className="min-h-screen bg-[#080808]">
+      <Navbar />
+      <Hero />
+      <Features />
+      <EquipmentGrid />
+      <Footer />
     </main>
   )
 }
