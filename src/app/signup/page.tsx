@@ -3,9 +3,11 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { useAuth } from '@/app/auth-provider'
 
 export default function SignupPage() {
   const router = useRouter()
+  const { signUp, user } = useAuth()
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
@@ -15,6 +17,11 @@ export default function SignupPage() {
   })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+
+  if (user) {
+    router.push('/dashboard')
+    return null
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -33,13 +40,12 @@ export default function SignupPage() {
       return
     }
 
-    try {
-      // Demo: simulate signup
-      router.push('/dashboard')
-    } catch (err) {
-      setError('Signup failed. Please try again.')
-    } finally {
+    const result = await signUp(formData)
+    if (result.error) {
+      setError(result.error)
       setLoading(false)
+    } else {
+      router.push('/dashboard')
     }
   }
 

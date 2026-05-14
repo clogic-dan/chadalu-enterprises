@@ -3,9 +3,11 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { AuthProvider, useAuth } from '@/app/auth-provider'
 
 export default function LoginPage() {
   const router = useRouter()
+  const { signIn, user } = useAuth()
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -14,23 +16,19 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
+  if (user) {
+    router.push(user.role === 'admin' ? '/admin' : '/dashboard')
+    return null
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
     setError('')
 
-    try {
-      // Demo: simulate login
-      if (formData.email === 'admin@chadalu.com' && formData.password === 'admin123') {
-        router.push('/admin')
-      } else if (formData.email && formData.password) {
-        router.push('/dashboard')
-      } else {
-        setError('Please enter email and password')
-      }
-    } catch (err) {
-      setError('Login failed. Please try again.')
-    } finally {
+    const result = await signIn(formData.email, formData.password)
+    if (result.error) {
+      setError(result.error)
       setLoading(false)
     }
   }
@@ -55,15 +53,16 @@ export default function LoginPage() {
 
             <div>
               <label htmlFor="email" className="block text-[#F2EBD9] font-condensed font-medium mb-2">
-                Email or Phone
+                Email
               </label>
               <input
-                type="text"
+                type="email"
                 id="email"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                required
                 className="w-full px-4 py-3 bg-[#080808] border border-[#C8922A]/20 rounded text-[#F2EBD9] font-body focus:border-[#C8922A] focus:outline-none transition-colors"
-                placeholder="email@example.com or +254..."
+                placeholder="email@example.com"
               />
             </div>
 
@@ -76,6 +75,7 @@ export default function LoginPage() {
                 id="password"
                 value={formData.password}
                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                required
                 className="w-full px-4 py-3 bg-[#080808] border border-[#C8922A]/20 rounded text-[#F2EBD9] font-body focus:border-[#C8922A] focus:outline-none transition-colors"
                 placeholder="Enter your password"
               />
@@ -112,14 +112,6 @@ export default function LoginPage() {
                 Sign up
               </Link>
             </p>
-          </div>
-
-          <div className="mt-6 pt-6 border-t border-[#C8922A]/10">
-            <p className="text-center text-[#F2EBD9]/40 font-body text-sm mb-4">Admin Demo Access</p>
-            <div className="bg-[#080808] rounded p-4 text-center">
-              <p className="text-[#F2EBD9]/60 font-body text-sm">Email: admin@chadalu.com</p>
-              <p className="text-[#F2EBD9]/60 font-body text-sm">Password: admin123</p>
-            </div>
           </div>
         </div>
 
